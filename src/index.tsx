@@ -4,6 +4,7 @@ import "./styles/index.css";
 import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import Static from "./components/Static";
+import Form from "./components/Form";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 
@@ -34,7 +35,7 @@ const routes = createBrowserRouter([
       },
       {
         path: "form",
-        element: <h1>Form</h1>,
+        element: <Form />,
       },
       { path: "", element: <Navigate to={"static"} /> },
     ],
