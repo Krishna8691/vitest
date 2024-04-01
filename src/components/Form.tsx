@@ -1,15 +1,25 @@
 import { ChangeEvent, FormEvent, MouseEvent, useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, FormLabel } from "react-bootstrap";
 import { default as BootstrapForm } from "react-bootstrap/Form";
-import Toast from "react-bootstrap/Toast";
+import { useSimpleToast } from "../hooks/useSimpleToast";
+import TopRightRenderer from "../wrappers/TopRightRenderer";
+
+export interface Props {
+  username: string;
+  color: string;
+  checkbox: boolean;
+  onChange: (e: ChangeEvent) => void;
+  onCheckboxChange: () => void;
+  submitForm: (e: MouseEvent | FormEvent) => void;
+}
 
 export default function Form() {
-  const [showSubmitNotification, setShowSubmitNotification] = useState(false);
+  const { toggleSubmitNotifcation, renderToast } = useSimpleToast({
+    header: "Form submitted",
+    body: "the form was successful submitted, data is now saved!",
+  });
   const [formValues, setFormValues] = useState({ username: "", color: "" });
-  const [skip, setSkip] = useState(false);
-
-  const toggleSubmitNotifcation = () =>
-    setShowSubmitNotification(!showSubmitNotification);
+  const [checkbox, setCheckbox] = useState(false);
 
   const onChange = (e: ChangeEvent) => {
     setFormValues({
@@ -18,12 +28,46 @@ export default function Form() {
     });
   };
 
-  const onCheckboxChange = () => setSkip((prv) => !prv);
+  const onCheckboxChange = () => {
+    setCheckbox((prv) => !prv);
+  };
 
   const submitForm = (e: MouseEvent | FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleSubmitNotifcation();
+    // some api request can be triggered here, not getting into the details of the implementation ;)
+    setTimeout(() => {
+      toggleSubmitNotifcation();
+    }, 1000);
+  };
+
+  return (
+    <>
+      <SampleForm
+        onChange={onChange}
+        onCheckboxChange={onCheckboxChange}
+        checkbox={checkbox}
+        submitForm={submitForm}
+        username={formValues.username}
+        color={formValues.color}
+      />
+      <TopRightRenderer>{renderToast()}</TopRightRenderer>
+    </>
+  );
+}
+
+export function SampleForm({
+  username,
+  color,
+  checkbox,
+  onChange,
+  onCheckboxChange,
+  submitForm,
+}: Props): JSX.Element {
+  const [status, setStatus] = useState("");
+  const handleSubmit = (e: MouseEvent | FormEvent) => {
+    submitForm(e);
+    setStatus("Form is submitted");
   };
 
   return (
@@ -32,22 +76,28 @@ export default function Form() {
         <BootstrapForm.Group className="mb-3">
           <BootstrapForm.Label htmlFor="username">Username</BootstrapForm.Label>
           <BootstrapForm.Control
-            value={formValues.username}
+            value={username}
             type="text"
             id="username"
             onChange={onChange}
-            isValid={!!formValues.username.length}
-            isInvalid={!!!formValues.username.length}
-            data-testid='username-field'
+            isValid={!!username.length}
+            isInvalid={!!!username.length}
+            data-testid="username-field"
             required
           />
-          {!!!formValues.username.length && (
-            <BootstrapForm.Control.Feedback data-testid="invalid-feedback-username" type="invalid">
+          {!!!username.length && (
+            <BootstrapForm.Control.Feedback
+              data-testid="invalid-feedback-username"
+              type="invalid"
+            >
               Please enter your username!
             </BootstrapForm.Control.Feedback>
           )}
-          {!!formValues.username.length && (
-            <BootstrapForm.Control.Feedback data-testid="valid-feedback-username" type="valid">
+          {!!username.length && (
+            <BootstrapForm.Control.Feedback
+              data-testid="valid-feedback-username"
+              type="valid"
+            >
               Username is entered
             </BootstrapForm.Control.Feedback>
           )}
@@ -57,29 +107,35 @@ export default function Form() {
             Favourite color
           </BootstrapForm.Label>
           <BootstrapForm.Control
-            value={formValues.color}
+            value={color}
             type="text"
             id="color"
             onChange={onChange}
-            isValid={!!formValues.color.length}
-            isInvalid={!!!formValues.color.length}
-            data-testid='color-field'
+            isValid={!!color.length}
+            isInvalid={!!!color.length}
+            data-testid="color-field"
             required
           />
-          {!!!formValues.color.length && (
-            <BootstrapForm.Control.Feedback data-testid="invalid-feedback-color" type="invalid">
+          {!!!color.length && (
+            <BootstrapForm.Control.Feedback
+              data-testid="invalid-feedback-color"
+              type="invalid"
+            >
               Please enter your favourite color!
             </BootstrapForm.Control.Feedback>
           )}
-          {!!formValues.color.length && (
-            <BootstrapForm.Control.Feedback data-testid="valid-feedback-color" type="valid">
+          {!!color.length && (
+            <BootstrapForm.Control.Feedback
+              data-testid="valid-feedback-color"
+              type="valid"
+            >
               Favorite color is entered
             </BootstrapForm.Control.Feedback>
           )}
         </BootstrapForm.Group>
         <BootstrapForm.Group className="mb-3" controlId="exampleForm">
           <BootstrapForm.Check
-            checked={skip}
+            checked={checkbox}
             onChange={onCheckboxChange}
             type={"checkbox"}
             label="Accept terms and conditions and skip this form"
@@ -88,23 +144,17 @@ export default function Form() {
         </BootstrapForm.Group>
         <Button
           disabled={
-            !(skip && !!formValues.username.length && !!formValues.color.length)
+            !(checkbox && !!username.length && !!color.length) ||
+            !!status.length
           }
           type="submit"
-          onClick={submitForm}
+          onClick={handleSubmit}
           aria-label="submit"
         >
           Submit
         </Button>
+        <FormLabel role="status" className="ms-2">{status}</FormLabel>
       </BootstrapForm>
-      <div>
-        <Toast show={showSubmitNotification} onClose={toggleSubmitNotifcation}>
-          <Toast.Header>
-            <strong className="me-auto">Form Submission</strong>
-          </Toast.Header>
-          <Toast.Body>The form was submitted successfully</Toast.Body>
-        </Toast>
-      </div>
     </>
   );
 }

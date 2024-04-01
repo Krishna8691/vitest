@@ -1,12 +1,32 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Form from "../../src/components/Form";
 
 describe("Form page", () => {
   const user = userEvent.setup();
 
-  it("username field validation states", async () => {
-    let component = render(<Form />);
+  const renderComponent = () => {
+    const component = render(<Form />);
+    const submitButton = component.getByLabelText("submit");
+
+    const isSubmitButtonEnabled = () => {
+      expect(submitButton).toBeEnabled();
+    };
+
+    const isSubmitButtonDisabled = () => {
+      expect(submitButton).toBeDisabled();
+    };
+
+    return {
+      component,
+      submitButton,
+      isSubmitButtonEnabled,
+      isSubmitButtonDisabled,
+    };
+  };
+
+  it("username field validation along with submit button status", async () => {
+    const { component, isSubmitButtonDisabled } = renderComponent();
     const usernameInput = component.getByTestId("username-field");
 
     {
@@ -26,10 +46,12 @@ describe("Form page", () => {
       const invalidFeeback = component.getByTestId("invalid-feedback-username");
       expect(invalidFeeback).toBeInTheDocument();
     }
+
+    isSubmitButtonDisabled();
   });
 
-  it("color field validation states", async () => {
-    let component = render(<Form />);
+  it("color field validation along with submit button status", async () => {
+    const { component, isSubmitButtonDisabled } = renderComponent();
     const colorInput = component.getByTestId("color-field");
 
     {
@@ -44,74 +66,42 @@ describe("Form page", () => {
     expect(validFeeback).toBeInTheDocument();
 
     {
-      // expecting the validation to be unsuccessful after clearing the color
+      // expecting the validation to be unsuccessful after clearing the color and submit button to be disabled
       await user.clear(colorInput);
       const invalidFeeback = component.getByTestId("invalid-feedback-color");
       expect(invalidFeeback).toBeInTheDocument();
     }
+
+    isSubmitButtonDisabled();
   });
 
-  it("enable submit button when all fields are validated", async () => {
-    const component = render(<Form />);
-    // const inputElements = component.getAllByTestId(/(-field)$/g);
+  it("form validation states, submit button enabled, form status, form submission", async () => {
+    const { component, isSubmitButtonEnabled, submitButton } =
+      renderComponent();
 
-    // inputElements.forEach(async (element) => {
-    //   await user.type(element, "somevalue");
-    // });
-    // console.log('---- ', inputElements[0].nodeValue);
-    
+    const inputElements = component.getAllByTestId(/(-field)$/g);
+    const fieldTypes = inputElements.map((element) =>
+      user.type(element, "somevalue")
+    );
+    await Promise.all(fieldTypes);
 
     const usernameInput = component.getByTestId("username-field");
     await user.type(usernameInput, "somevalue");
-    console.log('======= ', usernameInput.nodeValue);
 
     const checkbox = component.getByTestId("agreement-checkbox");
     await user.click(checkbox);
     expect(checkbox).toBeChecked();
 
-    const submitButton = component.getByLabelText('submit');
-    expect(submitButton).toBeEnabled();
+    isSubmitButtonEnabled();
+
+    await user.click(submitButton);
+
+    // also expect form status to appear
+    const status = component.getByRole("status").textContent;
+    expect(status).toBeTruthy();
+
+    // also expect successful form submission
+    const alert = await screen.findByRole("alert");
+    expect(alert).toBeInTheDocument();
   });
-
-  // it("color field validated when it has value", () => {
-  //   const component = render(<Welcome />);
-  //   const welcomeElement = component.getByTestId("welcome");
-  //   expect(welcomeElement).toHaveTextContent(/guest user/i);
-  // });
-
-  // it("color field invalidated when it doesn't have value", () => {
-  //   const component = render(<Welcome />);
-  //   const welcomeElement = component.getByTestId("welcome");
-  //   expect(welcomeElement).toHaveTextContent(/guest user/i);
-  // });
-
-  // it("submit button is disabled when form fields are empty and invalidated", () => {
-  //   const component = render(<Welcome userName={"Krishna"} />);
-  //   const welcomeElement = component.getByTestId("welcome");
-  //   expect(welcomeElement).toHaveTextContent(/krishna/i);
-  // });
-
-  // it("submit button is enabled when form fields are filled and validated", () => {
-  //   const component = render(<Welcome />);
-  //   const welcomeElement = component.getByTestId("welcome");
-  //   expect(welcomeElement).toHaveTextContent(/guest user/i);
-  // });
-
-  // it("submit button is disabled when username field is invalidated", () => {
-  //   const component = render(<Welcome />);
-  //   const welcomeElement = component.getByTestId("welcome");
-  //   expect(welcomeElement).toHaveTextContent(/guest user/i);
-  // });
-
-  // it("submit button is disabled when color field is invalidated", () => {
-  //   const component = render(<Welcome />);
-  //   const welcomeElement = component.getByTestId("welcome");
-  //   expect(welcomeElement).toHaveTextContent(/guest user/i);
-  // });
-
-  // it("submit button is disabled when checkbox is unchecked", () => {
-  //   const component = render(<Welcome />);
-  //   const welcomeElement = component.getByTestId("welcome");
-  //   expect(welcomeElement).toHaveTextContent(/guest user/i);
-  // });
 });

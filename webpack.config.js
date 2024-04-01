@@ -1,7 +1,7 @@
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { join } = require("path");
 
-const PORT = 8080;
+const PORT = 8888;
 
 module.exports = {
   mode: "development",

@@ -12,30 +12,24 @@ export default function Navigation() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="#home">
               <NavLink
-                className={"text-decoration-none text-dark"}
+                className={"nav-link text-decoration-none text-dark"}
                 to={"/static"}
               >
                 Static
               </NavLink>
-            </Nav.Link>
-            <Nav.Link href="#link">
               <NavLink
-                className={"text-decoration-none text-dark"}
+                className={"nav-link text-decoration-none text-dark"}
                 to={"/form"}
               >
                 Form
               </NavLink>
-            </Nav.Link>
-            <Nav.Link>
               <NavLink
-                className={"text-decoration-none text-dark"}
+                className={"nav-link text-decoration-none text-dark"}
                 to={"/modal"}
               >
                 Modal
               </NavLink>
-            </Nav.Link>
             <NavDropdown
               className="border-0"
               title="Dropdown"
