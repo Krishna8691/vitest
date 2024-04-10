@@ -1,10 +1,9 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import { NavLink } from "react-router-dom";
 
-export default function Navigation() {
+export default function Navigation({ count }: { count: number }) {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container fluid>
@@ -12,33 +11,25 @@ export default function Navigation() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-              <NavLink
-                className={"nav-link text-decoration-none text-dark"}
-                to={"/static"}
-              >
-                Static
-              </NavLink>
-              <NavLink
-                className={"nav-link text-decoration-none text-dark"}
-                to={"/form"}
-              >
-                Form
-              </NavLink>
-              <NavLink
-                className={"nav-link text-decoration-none text-dark"}
-                to={"/modal"}
-              >
-                Modal
-              </NavLink>
-            <NavDropdown
-              className="border-0"
-              title="Dropdown"
-              id="basic-nav-dropdown"
+            <NavLink
+              className={"nav-link text-decoration-none text-dark"}
+              to={"/static"}
             >
-              <NavDropdown.Item>Dropdown option 1</NavDropdown.Item>
-              <NavDropdown.Item>Dropdown option 2</NavDropdown.Item>
-              <NavDropdown.Item>Dropdown option 3</NavDropdown.Item>
-            </NavDropdown>
+              Static
+            </NavLink>
+            <NavLink
+              className={"nav-link text-decoration-none text-dark"}
+              to={"/form"}
+            >
+              Form
+            </NavLink>
+            <NavLink
+              className={"nav-link text-decoration-none text-dark"}
+              to={"/modal"}
+            >
+              Modal
+            </NavLink>
+            <span data-testid='nav-counter' className="nav-link text-danger"><b>{count}</b></span>
           </Nav>
         </Navbar.Collapse>
       </Container>
