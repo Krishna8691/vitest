@@ -29,7 +29,22 @@ export default function Navigation({ count }: { count: number }) {
             >
               Modal
             </NavLink>
-            <span data-testid='nav-counter' className="nav-link text-danger"><b>{count}</b></span>
+            <NavLink
+              data-testid="go-to-params-nav-item"
+              className={"nav-link text-decoration-none text-dark"}
+              to={"/gotoparams"}
+            >
+              GoToParams
+            </NavLink>
+            <NavLink
+              className={"nav-link text-decoration-none text-dark"}
+              to={"/params/2323"}
+            >
+              Params
+            </NavLink>
+            <span data-testid="nav-counter" className="nav-link text-danger">
+              <b>{count}</b>
+            </span>
           </Nav>
         </Navbar.Collapse>
       </Container>
